@@ -11,30 +11,17 @@ steps:
   name: publickey
   inputs:
     secureFile: 'azure_rsa.pub'
-
 - task: TerraformCLI@0
   inputs:
     command: 'init'
     workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
-    # commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(publickey.secureFilePath)'
+    commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(publickey.secretFilePath)'
     backendType: 'azurerm'
-    backendServiceArm: 'Microsoft Azure Internal Consumption'
+    backendServiceArm: 'internal microsoft'
     ensureBackend: true
     backendAzureRmResourceGroupName: 'terraform-backend'
     backendAzureRmResourceGroupLocation: 'westus2'
-    backendAzureRmStorageAccountName: 'devopsstorage4969'
-    backendAzureRmContainerName: 'devopsstorage4969container'
+    backendAzureRmStorageAccountName: 'terraformiacstorageac'
+    backendAzureRmContainerName: 'terraformiacstoragecontainer'
     backendAzureRmKey: 'kubernetes-dev.tfstate'
-
-- task: TerraformCLI@0
-  inputs:
-    command: 'apply'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
-    environmentServiceName: 'azure-resource-manager-service-connection'
-    commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(publickey.secureFilePath)'
-
-# - task: TerraformCLI@0
-#   inputs:
-#     command: 'destroy'
-#     workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
-#     environmentServiceName: 'azure-resource-manager-service-connection'
+    allowTelemetryCollection: true
