@@ -1,4 +1,3 @@
-
 trigger:
 - master
 
@@ -6,34 +5,36 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: echo k8s terraform Azure
+- script: echo K8S Terraform Azure!
   displayName: 'Run a one-line script'
 - task: DownloadSecureFile@1
   name: publickey
   inputs:
     secureFile: 'azure_rsa.pub'
-- script: |
-    echo K8s Terraform Azure
+
 - task: TerraformCLI@0
   inputs:
     command: 'init'
     workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
-    # commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_pub_key=$(publickey.secureFilePath)'
+    # commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(publickey.secureFilePath)'
     backendType: 'azurerm'
-    backendServiceArm: 'internal microsoft'
+    backendServiceArm: 'azure-resource-manager-service-connection'
     ensureBackend: true
     backendAzureRmResourceGroupName: 'terraform-backend'
     backendAzureRmResourceGroupLocation: 'westus2'
     backendAzureRmStorageAccountName: 'devopsstorage4969'
     backendAzureRmContainerName: 'devopsstorage4969container'
-    backendAzureRmKey: 'kuberenetes-dev.tfstate'
-    allowTelemetryCollection: true
-  displayName: 'Run a multi-line script'
+    backendAzureRmKey: 'kubernetes-dev.tfstate'
+
 - task: TerraformCLI@0
   inputs:
     command: 'apply'
     workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
-    environmentServiceName: 'Microsoft Azure Internal Consumption(c510c2bf-bfab-406f-9471-52e0f99d3f53)'
-    commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_pub_key=$(publickey.secureFilePath)'
-    allowTelemetryCollection: true
-  
+    environmentServiceName: 'azure-resource-manager-service-connection'
+    commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(publickey.secureFilePath)'
+
+# - task: TerraformCLI@0
+#   inputs:
+#     command: 'destroy'
+#     workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
+#     environmentServiceName: 'azure-resource-manager-service-connection'
